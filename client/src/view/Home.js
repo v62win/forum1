@@ -26,7 +26,7 @@ const Home = () => {
                         onChange={(e) => setThread(e.target.value)}
                         />
                 </div>
-                <button className="homeBtn">CREATE THREAD</button>
+                <button className="homeBtn">CREATE</button>
             </form>
         </main>
         </>

@@ -1,15 +1,46 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    const handleSubmit = (e) => {
+    const navigate = useNavigate();
+
+    const signIN = async () => {
+        try {
+          const response = await axios.post("http://localhost:4000/api/login", {
+            email,
+            password,
+          });
+    
+          const data = response.data;
+    
+          if (response.status === 200) {
+            alert(data.message || "Succesfully logged in!");
+            navigate('/home');
+            localStorage.setItem("_id", data.id);
+        
+                      
+          } else {
+            alert(data.message || "Something went wrong");
+          }
+        } catch (error) {
+          if (error.response && error.response.data && error.response.data.message) {
+            alert(error.response.data.message);
+          } else {
+            alert("An error occurred. Please try again later.");
+          }
+        }
+      };
+
+    const handleSubmit = async(e) => {
         e.preventDefault();
         console.log({ email,password });
         setEmail("");
         setPassword("");
+        await signIN();
 
     };
 

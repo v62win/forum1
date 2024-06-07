@@ -1,12 +1,17 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const Nav = () => {
+    const navigate = useNavigate();
     const signout = () => {
+        localStorage.removeItem("_id");
+    //👇🏻 redirects to the login page
+           navigate("/");
         alert("User signed out");
     };
     return(
         <nav className="navbar">
-            <h2>FreeDorm</h2>
+            <h2>Puta ina mo</h2>
             <div className="navbarRight">
                 <button onClick={signout}>Sign out</button>
             </div>

@@ -11,7 +11,7 @@ const Nav = () => {
     };
     return(
         <nav className="navbar">
-            <h2>Puta ina mo</h2>
+            <h2>Pending</h2>
             <div className="navbarRight">
                 <button onClick={signout}>Sign out</button>
             </div>

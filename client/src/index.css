@@ -53,7 +53,7 @@ a {
 	font-size: 16px;
 	font-weight: bold;
 	color: #fffbf5;
-	background-color: #674188;
+	background-color: #6EC6A9;
 	margin-bottom: 15px;
 }
 .homeForm {
@@ -82,7 +82,7 @@ a {
 .thread__item {
 	padding: 20px;
 	width: 80%;
-	box-shadow: 0 0 1px 1px #c3acd0;
+	box-shadow: 0 0 1px 1px #9CD8C4;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -95,7 +95,7 @@ a {
 }
 .likesBtn {
 	height: 30px;
-	color: #f99417;
+	color: #F1CCD7;
 	cursor: pointer;
 }
 .react__container {
@@ -126,7 +126,7 @@ a {
 .navbar {
 	width: 100%;
 	padding: 10px 20px;
-	background-color: #674188;
+	background-color: #45B08C;
 	display: flex;
 	height: 10vh;
 	align-items: center;
@@ -142,7 +142,7 @@ a {
 .navbarRight > button {
 	padding: 15px;
 	width: 150px;
-	background-color: #f99417;
+	background-color: #E2808A;
 	color: #fffbf5;
 	font-size: 16px;
 	border: none;

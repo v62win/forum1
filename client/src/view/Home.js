@@ -1,6 +1,8 @@
 import React, {useEffect , useState} from "react";
 import Nav from "./Nav";
 import { useNavigate } from "react-router-dom";
+import Likes from "../utils/likes";
+import Comments from "../utils/comments";
 
 
 const Home = () => {
@@ -80,6 +82,18 @@ const Home = () => {
                     {threadList?.map((thread) => (
                         <div className="thread__item" key={thread.threadId}>
                             <p>{thread.thread}</p>
+                            <div className='react__container'>
+                                <Likes
+                                    numberOfLikes={thread.likes?.length || 0}
+                                    threadId={thread.id}
+                                />
+                                <Comments
+                                    numberOfComments={thread.replies?.length || 0}
+                                    threadId={thread.id}
+                                    title={thread.title}
+                                />
+                            </div>
+                           
                         </div>
                     ))}
                 </div>

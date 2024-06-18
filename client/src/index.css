@@ -14,8 +14,6 @@ input {
 a {
 	text-decoration: none;
 }
-.register,
-.login,
 .home,
 .replies,
 .modal {
@@ -151,3 +149,110 @@ a {
 	cursor: pointer;
 	border-radius: 3px;
 }
+.login {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+    font-family: Arial, sans-serif;
+}
+.register {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+    font-family: Arial, sans-serif;
+}
+.login-form-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background-color: #fff;
+}
+.register-form-container{
+	flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background-color: #fff;
+}
+
+.visual-content {
+    flex: 0.4;
+    position: relative;
+    background: url('D:\Forum_app\client\public\4156248.jpg') no-repeat center center;
+    background-size: cover;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    overflow: hidden;
+}
+
+.visual-content .bird {
+    position: relative;
+    height: 40px; /* Adjust height as per your image dimensions */
+    width: 72px; /* Adjust width as per your image dimensions */
+    background-size: cover;
+    z-index: 3;
+}
+
+.visual-content .bird1 {
+    top: 10%;
+    left: 0%;
+    background-image: url('D:\Forum_app\client\public\bird.png');
+}
+
+.visual-content .bird2 {
+    top: 25%;
+    left: 12%;
+    background-image: url('D:\Forum_app\client\public\bird2.png');
+}
+
+.visual-content .bird3 {
+    top: 12%;
+    left: 50%;
+    background-image: url('D:\Forum_app\client\public\bird3.png');
+}
+
+.visual-content .bird4 {
+    top: 28%;
+    right: -20%;
+    background-image: url('D:\Forum_app\client\public\bird4.png');
+}
+
+.visual-content .bird5 {
+    top: 40%;
+    right: 55%;
+    background-image: url('D:\Forum_app\client\public\bird5.png');
+}
+.visual-content .bird6 {
+    top: 60%;
+    right: 42%;
+    background-image: url('D:\Forum_app\client\public\eye.png');
+}
+.visual-content .sun {
+    position: absolute;
+    bottom: 0%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 250px; /* Adjust height as per your image dimensions */
+    width: 250px; /* Adjust width as per your image dimensions */
+    background-size: cover;
+    background-image: url('D:\Forum_app\client\public\sun.png'); /* Adjust the URL to your sun image */
+    z-index: 2;
+}
+.visual-content .smiley {
+	position: absolute;
+	bottom: 20%;
+	left: 38%;
+	transform: rotate(320deg);;
+	height: 100px;
+	width: 100px;
+	background-size: cover;
+	background-image: url('D:\Forum_app\client\public\smiley.png');
+	z-index: 2;
+}
+

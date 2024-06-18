@@ -5,7 +5,9 @@ const User = require('../database/userModel');
 const bcrypt = require('bcrypt');
 const fs = require('fs');
 const path = require('path');
+const { title } = require("process");
 console.log(typeof connectDB); // This should output 'function'
+
 
 const app = express();
 const PORT = 4000;
@@ -65,7 +67,7 @@ app.post("/api/login", async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (isMatch) {
-            return res.status(200).json({  id: user._id, message: "Successfully logged in" });
+            return res.status(200).json({  id: user._id, you: user.username, message: "Successfully logged in" });
         } else {
             return res.status(400).json({ message: "Invalid password" });
         }
@@ -77,40 +79,48 @@ app.post("/api/login", async (req, res) => {
 
 
 const filePath = path.join(__dirname, "thread_list.json");
-let threadList = [];
 
-// Load thread list from disk at startup
-const loadThreadList = () => {
+// Read thread list from disk
+const readThreadList = () => {
   try {
     if (fs.existsSync(filePath)) {
       const data = fs.readFileSync(filePath, "utf8");
-      threadList = JSON.parse(data);
+      return JSON.parse(data);
     }
+    return [];
   } catch (error) {
-    console.error("Error loading thread list:", error);
-    threadList = [];
+    console.error("Error reading thread list:", error);
+    return [];
   }
 };
 
-// Save thread list to disk
-const saveThreadList = () => {
-  fs.writeFileSync(filePath, JSON.stringify(threadList, null, 4));
+// Write thread list to disk
+const writeThreadList = (threadList) => {
+  try {
+    fs.writeFileSync(filePath, JSON.stringify(threadList, null, 4));
+  } catch (error) {
+    console.error("Error writing thread list:", error);
+  }
 };
 
 const addThread = (thread) => {
+  const threadList = readThreadList();
   thread.replies = [];
   thread.likes = [];
   threadList.unshift(thread);
-  saveThreadList();
+  writeThreadList(threadList);
 };
 
 const getAllThreads = () => {
-    return threadList.map((thread) => ({
-        threadId: thread.threadId,
-        userId: thread.userId,
-        thread: thread.thread,
-        createdAt: thread.createdAt,
-      }));
+  const threadList = readThreadList();
+  return threadList.map((thread) => ({
+    threadId: thread.threadId,
+    userId: thread.userId,
+    thread: thread.thread,
+    createdAt: thread.createdAt,
+    likes: thread.likes,
+    replies: thread.replies,
+  }));
 };
 
 // Create a Thread model class
@@ -120,10 +130,12 @@ class Thread {
     this.userId = userId;
     this.thread = thread;
     this.createdAt = createdAt;
+    this.likes = [];
+    this.replies = [];
   }
 }
 
-app.post("/api/create/thread", (req, res) => {
+app.post("/api/create/thread", async (req, res) => {
   const { thread, userId } = req.body;
   const threadId = generateID();
 
@@ -134,7 +146,7 @@ app.post("/api/create/thread", (req, res) => {
     new Date().toISOString()
   );
 
-  addThread(newThread);
+    addThread(newThread);
 
   res.status(201).json({
     message: "Thread created successfully",
@@ -142,18 +154,86 @@ app.post("/api/create/thread", (req, res) => {
   });
 });
 
-app.get("/api/all/threads", (req, res) => {
-    res.json(getAllThreads());
-  });
-  
-  // Load thread list at startup
-  loadThreadList();
+app.get("/api/all/threads", async (req, res) => {
+  await res.json(getAllThreads());
+});
 
+app.post("/api/thread/like", async (req, res) => {
+  const { threadId, userId } = req.body;
+
+  const threadList = await readThreadList();
+
+  const threadIndex = await threadList.findIndex((thread) => thread.threadId === threadId);
+
+
+  if (threadIndex === -1) {
+    return res.status(404).json({ message: "Thread not found" });
+  }
+
+  const userLiked = threadList[threadIndex].likes.includes(userId);
+  if (userLiked) {
+    // Remove the like if the user has already liked the thread
+   threadList[threadIndex].likes = threadList[threadIndex].likes.filter((likeUserId) => likeUserId !== userId);
+  } else {
+    // Add the like if the user has not liked the thread
+    await threadList[threadIndex].likes.push(userId);
+  }
+
+  writeThreadList(threadList); // Save the updated thread list to disk
+
+  res.status(200).json({ message: "Like updated successfully" });
+});
+
+app.post("/api/thread/replies", async (req, res) => {
+  const { threadId } = req.body;
+  
+  const threadList = await readThreadList();
+
+  const thread = threadList.find((thread) => thread.threadId === threadId);
+
+  if (!thread) {
+    return res.status(404).json({ message: "Thread not found" });
+  }
+
+  res.json({
+    replies: thread.replies,
+    thread: thread.thread,
+  });
+});
+app.post("/api/create/reply", async (req, res) => {
+  const { threadId, userId, reply, name } = req.body;
+  const threadList = await readThreadList();
+  const thread = threadList.find((thread) => thread.threadId === threadId);
+  
+  if (!thread) {
+    return res.status(404).json({ message: "Thread not found" });
+  }
+  const th = threadList.find((thread) => thread.userId === userId);
+  if (!th) {
+    return res.status(404).json({ message: "user not found" });
+  }
+
+    const replyId = generateID();
+    const newReply = {
+      name,
+      replyId,
+      userId,
+      reply,
+      createdAt: new Date().toISOString(),
+    };
+    thread.replies.push(newReply);
+    writeThreadList(threadList);
+    res.json({
+      message: "Response added successfully!",
+  });
+
+});
 app.get("/api", (req, res) => {
     res.json({
         message: "blyat",
     });
 });
+
 
 // Call connectDB before starting the server
 connectDB();

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -42,9 +42,41 @@ const Register = () => {
     setUsername("");
     setPassword("");
   };
+  
+  const visualContentRef = useRef(null);
+
+useEffect(() => {
+    const parallax = (event) => {
+        if (visualContentRef.current) {
+            visualContentRef.current.querySelectorAll(".bird").forEach((bird) => {
+                const speed = parseFloat(bird.getAttribute("data-speed"));
+                const x = (event.pageX * speed) / 100;
+                const y = (event.pageY * speed) / 100;
+                bird.style.transform = `translateX(${x}px) translateY(${y}px)`;
+            });
+        }
+    };
+
+    document.addEventListener("mousemove", parallax);
+
+    return () => {
+        document.removeEventListener("mousemove", parallax);
+    };
+}, []);
 
   return (
     <main className="register">
+       <div className="visual-content" ref={visualContentRef}>
+                <div className="bird bird1" data-speed="2"></div>
+                <div className="bird bird2" data-speed="1.5"></div>
+                <div className="bird bird3" data-speed="1.8"></div>
+                <div className="bird bird4" data-speed="2.2"></div>
+                <div className="bird bird5" data-speed="1.3"></div>
+                <div className="sun"></div>
+                <div className="smiley"></div>
+                <div className="bird bird6" data-speed="1"></div>
+            </div>
+            <div className="register-form-container">
       <h1 className="registerTitle">Create an account</h1>
       <form className="registerForm" onSubmit={handleSubmit}>
         <label htmlFor="username">USERNAME</label>
@@ -79,6 +111,7 @@ const Register = () => {
           Have an account? <Link to="/">Login</Link>
         </p>
       </form>
+      </div>
     </main>
   );
 };

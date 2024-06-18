@@ -5,6 +5,7 @@ const Nav = () => {
     const navigate = useNavigate();
     const signout = () => {
         localStorage.removeItem("_id");
+        localStorage.removeItem("_name");
     //👇🏻 redirects to the login page
            navigate("/");
         alert("User signed out");

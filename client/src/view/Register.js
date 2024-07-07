@@ -74,7 +74,7 @@ useEffect(() => {
                 <div className="bird bird5" data-speed="1.3"></div>
                 <div className="sun"></div>
                 <div className="smiley"></div>
-                <div className="bird bird6" data-speed="1"></div>
+                <div className="bird bird6" data-speed="4"></div>
             </div>
             <div className="register-form-container">
       <h1 className="registerTitle">Create an account</h1>

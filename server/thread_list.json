@@ -99,7 +99,9 @@
         "userId": "6662aad715e8a953521f9c19",
         "thread": "blyat",
         "createdAt": "2024-06-08T08:56:52.369Z",
-        "likes": [],
+        "likes": [
+            "6662aad715e8a953521f9c19"
+        ],
         "replies": []
     },
     {

@@ -189,6 +189,7 @@ a {
     justify-content: flex-start;
     align-items: flex-start;
     overflow: hidden;
+	
 }
 
 .visual-content .bird {
@@ -255,4 +256,16 @@ a {
 	background-image: url('D:\Forum_app\client\public\smiley.png');
 	z-index: 2;
 }
+.visualcontent {
+    flex: 0.5;
+    position: relative;
+    background: url('D:\Forum_app\client\public\2202_w026_n002_1422b_p1_1422.jpg') no-repeat center center;
+    background-size: cover;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    overflow: hidden;
+    height: 100vh; /* Ensure full viewport height */
+}
+
 

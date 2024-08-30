@@ -4,7 +4,6 @@ import axios from "axios";
 
 const Register = () => {
   const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
@@ -12,7 +11,6 @@ const Register = () => {
   const signUp = async () => {
     try {
       const response = await axios.post("http://localhost:4000/api/register", {
-        email,
         password,
         username,
       });
@@ -36,9 +34,8 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log({ username, email, password });
+    console.log({ username,password });
     await signUp();
-    setEmail("");
     setUsername("");
     setPassword("");
   };
@@ -87,15 +84,6 @@ useEffect(() => {
           required
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-        />
-        <label htmlFor="email">Email Address</label>
-        <input
-          type="text"
-          name="email"
-          id="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
         />
         <label htmlFor="password">PASSWORD</label>
         <input

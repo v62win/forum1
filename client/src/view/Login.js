@@ -1,22 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-// Import Vanta.js halo effect
-import VANTA from "vanta/dist/vanta.halo.min";
 
-// Rest of your code...
 
 const Login = () => {
-    const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
-    const visualContentRef = useRef(null);
-    const vantaRef = useRef(null);
 
     const signIN = async () => {
         try {
             const response = await axios.post("http://localhost:4000/api/login", {
-                email,
+                username,
                 password,
             });
 
@@ -41,50 +36,57 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log({ email, password });
-        setEmail("");
+        console.log({ username, password });
+        setUsername("");
         setPassword("");
         await signIN();
     };
-    useEffect(() => {
-        // Initialize Vanta.js halo effect
-        if (!vantaRef.current) {
-            vantaRef.current = VANTA({
-                el: visualContentRef.current,
-                mouseControls: true,
-                touchControls: true,
-                gyroControls: false,
-                minHeight: 200.00,
-                minWidth: 200.00,
-                backgroundColor: 0x1b1343,
-                amplitudeFactor: 3.00,
-                xOffset: -0.02,
-                size: 0.10
-            });
-        }
 
-        return () => {
-            if (vantaRef.current) {
-                vantaRef.current.destroy();
+    const visualContentRef = useRef(null);
+
+    useEffect(() => {
+        const parallax = (event) => {
+            if (visualContentRef.current) {
+                visualContentRef.current.querySelectorAll(".bird").forEach((bird) => {
+                    const speed = parseFloat(bird.getAttribute("data-speed"));
+                    const x = (window.innerWidth - event.pageX * speed) / 100;
+                    const y = (window.innerHeight - event.pageY * speed) / 100;
+                    bird.style.transform = `translateX(${x}px) translateY(${y}px)`;
+                });
             }
         };
+
+        document.addEventListener("mousemove", parallax);
+
+        return () => {
+            document.removeEventListener("mousemove", parallax);
+        };
     }, []);
+
     return (
         <main className="login">
-             <div className="visualcontent" ref={visualContentRef}>
-                {/* Content for Vanta.js halo effect */}
+            <div className="visual-content" ref={visualContentRef}>
+                <div className="bird bird1" data-speed="2"></div>
+                <div className="bird bird2" data-speed="1.5"></div>
+                <div className="bird bird3" data-speed="1.8"></div>
+                <div className="bird bird4" data-speed="2.2"></div>
+                <div className="bird bird5" data-speed="1.3"></div>
+                <div className="sun"></div>
+                <div className="smiley"></div>
+                <div className="bird bird6" data-speed="1"></div>
+                
             </div>
             <div className="login-form-container">
                 <h1 className="loginTitle">Log in to your account</h1>
                 <form className="loginForm" onSubmit={handleSubmit}>
-                    <label htmlFor="email">Email Address</label>
+                    <label htmlFor="username">Username</label>
                     <input
                         type="text"
-                        name="email"
-                        id="email"
+                        name="username"
+                        id="username"
                         required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
                     />
                     <label htmlFor="password">PASSWORD</label>
                     <input

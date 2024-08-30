@@ -5,6 +5,8 @@ const User = require('../database/userModel');
 const bcrypt = require('bcrypt');
 const fs = require('fs');
 const path = require('path');
+const multer = require('multer');
+const axios = require('axios');
 const { title } = require("process");
 console.log(typeof connectDB); // This should output 'function'
 
@@ -18,16 +20,34 @@ app.use(cors());
 
 const generateID = () => Math.random().toString(36).substring(2, 10);
 
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const dir = './uploads';
+    if (!fs.existsSync(dir)){
+      fs.mkdirSync(dir);
+    }
+    cb(null, dir);
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
+
+const upload = multer({ storage: storage });
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+
 app.post("/api/register", async (req, res) => {
-    const { email, password, username } = req.body;
+    const { password, username } = req.body;
     try {
-        const userExists = await User.findOne({ email });
+        const userExists = await User.findOne({ username });
 
         if (userExists) {
             return res.status(400).json({ message: "User already exists" });
         }
 
-        const user = await User.create({ username, email, password });
+        const user = await User.create({ username,password });
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(password, salt);
 
@@ -37,7 +57,6 @@ app.post("/api/register", async (req, res) => {
             return res.status(201).json({
                 _id: user._id,
                 username: user.username,
-                email: user.email,
                 message: "Account created successfully!",
             });
         } else {
@@ -49,18 +68,18 @@ app.post("/api/register", async (req, res) => {
 });
 
 app.post("/api/login", async (req, res) => {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
     try {
-        // Check if email and password are provided
-        if (!email || !password) {
-            return res.status(400).json({ message: "Email and password are required" });
+        // Check if username and password are provided
+        if (!username || !password) {
+            return res.status(400).json({ message: "Username and password are required" });
         }
 
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ username });
 
         if (!user) {
-            return res.status(400).json({ message: "This email doesn't exist in our database" });
+            return res.status(400).json({ message: "This user doesn't exist in our database" });
         }
 
         // Compare the provided password with the stored hashed password
@@ -200,34 +219,58 @@ app.post("/api/thread/replies", async (req, res) => {
     thread: thread.thread,
   });
 });
-app.post("/api/create/reply", async (req, res) => {
-  const { threadId, userId, reply, name } = req.body;
+app.post("/api/create/reply", upload.array("media"), async (req, res) => {
+  const { threadId, userId, reply, name, mediaUrls } = req.body;
   const threadList = await readThreadList();
   const thread = threadList.find((thread) => thread.threadId === threadId);
-  
+
   if (!thread) {
     return res.status(404).json({ message: "Thread not found" });
   }
-  const th = threadList.find((thread) => thread.userId === userId);
-  if (!th) {
-    return res.status(404).json({ message: "user not found" });
+
+  const replyId = generateID();
+  const newReply = {
+    name,
+    replyId,
+    userId,
+    reply,
+    createdAt: new Date().toISOString(),
+    media: [],
+  };
+
+  // Handle uploaded files
+  if (req.files) {
+    req.files.forEach((file) => {
+      newReply.media.push({
+        type: file.mimetype.startsWith("image/") ? "image" : "video",
+        url: `/uploads/${file.filename}`,
+      });
+    });
   }
 
-    const replyId = generateID();
-    const newReply = {
-      name,
-      replyId,
-      userId,
-      reply,
-      createdAt: new Date().toISOString(),
-    };
-    thread.replies.push(newReply);
-    writeThreadList(threadList);
-    res.json({
-      message: "Response added successfully!",
-  });
+  // Handle media URLs
+  if (mediaUrls) {
+    const urls = Array.isArray(mediaUrls) ? mediaUrls : [mediaUrls];
+    urls.forEach((url) => {
+      const fileType = url.match(/\.(jpeg|jpg|gif|png|mp4|mov)$/i);
+      if (fileType) {
+        newReply.media.push({
+          type: fileType[0].match(/mp4|mov/) ? "video" : "image",
+          url: url,
+        });
+      }
+    });
+  }
 
+  thread.replies.push(newReply);
+  writeThreadList(threadList);
+
+  res.json({
+    message: "Response added successfully!",
+  });
 });
+
+
 app.get("/api", (req, res) => {
     res.json({
         message: "blyat",
@@ -241,5 +284,3 @@ connectDB();
 app.listen(PORT, () => {
     console.log(`Server listening on ${PORT}`);
 });
-
-
